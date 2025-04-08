@@ -394,6 +394,58 @@ impl<C: Config> Client<C> {
         I: Serialize,
         O: DeserializeOwned + std::marker::Send + 'static,
     {
+        // First attempt a normal request to check for errors
+        let request_clone = match serde_json::to_value(&request) {
+            Ok(value) => value,
+            Err(e) => {
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let _ = tx.send(Err(OpenAIError::JSONDeserialize(e)));
+                return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+            }
+        };
+
+        // Check for errors with a standard request first
+        let response = self
+            .http_client
+            .post(self.config.url(path))
+            .query(&self.config.query())
+            .headers(self.config.headers())
+            .json(&request_clone)
+            .send()
+            .await;
+
+        match response {
+            Ok(resp) => {
+                if !resp.status().is_success() {
+                    let status = resp.status();
+                    let body = resp.text().await.unwrap_or_default();
+
+                    // Try to parse as API error
+                    let wrapped_error: Result<WrappedError, _> = serde_json::from_str(&body);
+
+                    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+                    let err = if let Ok(wrapped_error) = wrapped_error {
+                        Err(OpenAIError::ApiError(wrapped_error.error))
+                    } else {
+                        Err(OpenAIError::StreamErrorWithBody {
+                            message: format!("Invalid status code: {status}"),
+                            body,
+                        })
+                    };
+
+                    let _ = tx.send(err);
+                    return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+                }
+            }
+            Err(e) => {
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let _ = tx.send(Err(OpenAIError::Reqwest(e)));
+                return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+            }
+        }
+
+        // If we get here, the request was valid, so continue with streaming
         let event_source = self
             .http_client
             .post(self.config.url(path))
@@ -416,6 +468,58 @@ impl<C: Config> Client<C> {
         I: Serialize,
         O: DeserializeOwned + std::marker::Send + 'static,
     {
+        // First attempt a normal request to check for errors
+        let request_clone = match serde_json::to_value(&request) {
+            Ok(value) => value,
+            Err(e) => {
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let _ = tx.send(Err(OpenAIError::JSONDeserialize(e)));
+                return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+            }
+        };
+
+        // Check for errors with a standard request first
+        let response = self
+            .http_client
+            .post(self.config.url(path))
+            .query(&self.config.query())
+            .headers(self.config.headers())
+            .json(&request_clone)
+            .send()
+            .await;
+
+        match response {
+            Ok(resp) => {
+                if !resp.status().is_success() {
+                    let status = resp.status();
+                    let body = resp.text().await.unwrap_or_default();
+
+                    // Try to parse as API error
+                    let wrapped_error: Result<WrappedError, _> = serde_json::from_str(&body);
+
+                    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+                    let err = if let Ok(wrapped_error) = wrapped_error {
+                        Err(OpenAIError::ApiError(wrapped_error.error))
+                    } else {
+                        Err(OpenAIError::StreamErrorWithBody {
+                            message: format!("Invalid status code: {status}"),
+                            body,
+                        })
+                    };
+
+                    let _ = tx.send(err);
+                    return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+                }
+            }
+            Err(e) => {
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let _ = tx.send(Err(OpenAIError::Reqwest(e)));
+                return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+            }
+        }
+
+        // If we get here, the request was valid, so continue with streaming
         let event_source = self
             .http_client
             .post(self.config.url(path))
@@ -438,6 +542,48 @@ impl<C: Config> Client<C> {
         Q: Serialize + ?Sized,
         O: DeserializeOwned + std::marker::Send + 'static,
     {
+        // Check for errors with a standard request first
+        let response = self
+            .http_client
+            .get(self.config.url(path))
+            .query(query)
+            .query(&self.config.query())
+            .headers(self.config.headers())
+            .send()
+            .await;
+
+        match response {
+            Ok(resp) => {
+                if !resp.status().is_success() {
+                    let status = resp.status();
+                    let body = resp.text().await.unwrap_or_default();
+
+                    // Try to parse as API error
+                    let wrapped_error: Result<WrappedError, _> = serde_json::from_str(&body);
+
+                    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+                    let err = if let Ok(wrapped_error) = wrapped_error {
+                        Err(OpenAIError::ApiError(wrapped_error.error))
+                    } else {
+                        Err(OpenAIError::StreamErrorWithBody {
+                            message: format!("Invalid status code: {status}"),
+                            body,
+                        })
+                    };
+
+                    let _ = tx.send(err);
+                    return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+                }
+            }
+            Err(e) => {
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let _ = tx.send(Err(OpenAIError::Reqwest(e)));
+                return Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx));
+            }
+        }
+
+        // If we get here, the request was valid, so continue with streaming
         let event_source = self
             .http_client
             .get(self.config.url(path))

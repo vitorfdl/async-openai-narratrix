@@ -39,13 +39,16 @@
   - [x] Uploads
 - Bring your own custom types for Request or Response objects.
 - SSE streaming on available APIs
-- Requests (except SSE streaming) including form submissions are retried with exponential backoff when [rate limited](https://platform.openai.com/docs/guides/rate-limits).
+- Requests (except SSE streaming) including form submissions are retried with
+  exponential backoff when
+  [rate limited](https://platform.openai.com/docs/guides/rate-limits).
 - Ergonomic builder pattern for all request objects.
 - Microsoft Azure OpenAI Service (only for APIs matching OpenAI spec)
 
 ## Usage
 
-The library reads [API key](https://platform.openai.com/account/api-keys) from the environment variable `OPENAI_API_KEY`.
+The library reads [API key](https://platform.openai.com/account/api-keys) from
+the environment variable `OPENAI_API_KEY`.
 
 ```bash
 # On macOS/Linux
@@ -57,13 +60,14 @@ export OPENAI_API_KEY='sk-...'
 $Env:OPENAI_API_KEY='sk-...'
 ```
 
-- Visit [examples](https://github.com/64bit/async-openai/tree/main/examples) directory on how to use `async-openai`.
+- Visit [examples](https://github.com/64bit/async-openai/tree/main/examples)
+  directory on how to use `async-openai`.
 - Visit [docs.rs/async-openai](https://docs.rs/async-openai) for docs.
 
 ## Realtime API
 
-Only types for Realtime API are implemented, and can be enabled with feature flag `realtime`.
-These types were written before OpenAI released official specs.
+Only types for Realtime API are implemented, and can be enabled with feature
+flag `realtime`. These types were written before OpenAI released official specs.
 
 ## Image Generation Example
 
@@ -111,9 +115,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 ## Bring Your Own Types
 
-Enable methods whose input and outputs are generics with `byot` feature. It creates a new method with same name and `_byot` suffix.
+Enable methods whose input and outputs are generics with `byot` feature. It
+creates a new method with same name and `_byot` suffix.
 
 For example, to use `serde_json::Value` as request and response type:
+
 ```rust
 let response: Value = client
         .chat()
@@ -135,35 +141,115 @@ let response: Value = client
 ```
 
 This can be useful in many scenarios:
-- To use this library with other OpenAI compatible APIs whose types don't exactly match OpenAI. 
+
+- To use this library with other OpenAI compatible APIs whose types don't
+  exactly match OpenAI.
 - Extend existing types in this crate with new fields with `serde`.
 - To avoid verbose types.
 - To escape deserialization errors.
 
-Visit [examples/bring-your-own-type](https://github.com/64bit/async-openai/tree/main/examples/bring-your-own-type) directory to learn more.
+Visit
+[examples/bring-your-own-type](https://github.com/64bit/async-openai/tree/main/examples/bring-your-own-type)
+directory to learn more.
 
 ## Contributing
 
-Thank you for taking the time to contribute and improve the project. I'd be happy to have you!
+Thank you for taking the time to contribute and improve the project. I'd be
+happy to have you!
 
-All forms of contributions, such as new features requests, bug fixes, issues, documentation, testing, comments, [examples](https://github.com/64bit/async-openai/tree/main/examples) etc. are welcome.
+All forms of contributions, such as new features requests, bug fixes, issues,
+documentation, testing, comments,
+[examples](https://github.com/64bit/async-openai/tree/main/examples) etc. are
+welcome.
 
-A good starting point would be to look at existing [open issues](https://github.com/64bit/async-openai/issues).
+A good starting point would be to look at existing
+[open issues](https://github.com/64bit/async-openai/issues).
 
-To maintain quality of the project, a minimum of the following is a must for code contribution:
+To maintain quality of the project, a minimum of the following is a must for
+code contribution:
 
-- **Names & Documentation**: All struct names, field names and doc comments are from OpenAPI spec. Nested objects in spec without names leaves room for making appropriate name.
-- **Tested**: For changes supporting test(s) and/or example is required. Existing examples, doc tests, unit tests, and integration tests should be made to work with the changes if applicable.
-- **Scope**: Keep scope limited to APIs available in official documents such as [API Reference](https://platform.openai.com/docs/api-reference) or [OpenAPI spec](https://github.com/openai/openai-openapi/). Other LLMs or AI Providers offer OpenAI-compatible APIs, yet they may not always have full parity. In such cases, the OpenAI spec takes precedence.
-- **Consistency**: Keep code style consistent across all the "APIs" that library exposes; it creates a great developer experience.
+- **Names & Documentation**: All struct names, field names and doc comments are
+  from OpenAPI spec. Nested objects in spec without names leaves room for making
+  appropriate name.
+- **Tested**: For changes supporting test(s) and/or example is required.
+  Existing examples, doc tests, unit tests, and integration tests should be made
+  to work with the changes if applicable.
+- **Scope**: Keep scope limited to APIs available in official documents such as
+  [API Reference](https://platform.openai.com/docs/api-reference) or
+  [OpenAPI spec](https://github.com/openai/openai-openapi/). Other LLMs or AI
+  Providers offer OpenAI-compatible APIs, yet they may not always have full
+  parity. In such cases, the OpenAI spec takes precedence.
+- **Consistency**: Keep code style consistent across all the "APIs" that library
+  exposes; it creates a great developer experience.
 
-This project adheres to [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct)
+This project adheres to
+[Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct)
 
 ## Complimentary Crates
 
-- [openai-func-enums](https://github.com/frankfralick/openai-func-enums) provides procedural macros that make it easier to use this library with OpenAI API's tool calling feature. It also provides derive macros you can add to existing [clap](https://github.com/clap-rs/clap) application subcommands for natural language use of command line tools. It also supports openai's [parallel tool calls](https://platform.openai.com/docs/guides/function-calling/parallel-function-calling) and allows you to choose between running multiple tool calls concurrently or own their own OS threads.
-- [async-openai-wasm](https://github.com/ifsheldon/async-openai-wasm) provides WASM support.
+- [openai-func-enums](https://github.com/frankfralick/openai-func-enums)
+  provides procedural macros that make it easier to use this library with OpenAI
+  API's tool calling feature. It also provides derive macros you can add to
+  existing [clap](https://github.com/clap-rs/clap) application subcommands for
+  natural language use of command line tools. It also supports openai's
+  [parallel tool calls](https://platform.openai.com/docs/guides/function-calling/parallel-function-calling)
+  and allows you to choose between running multiple tool calls concurrently or
+  own their own OS threads.
+- [async-openai-wasm](https://github.com/ifsheldon/async-openai-wasm) provides
+  WASM support.
 
 ## License
 
-This project is licensed under [MIT license](https://github.com/64bit/async-openai/blob/main/LICENSE).
+This project is licensed under
+[MIT license](https://github.com/64bit/async-openai/blob/main/LICENSE).
+
+## Error Handling with Streaming
+
+When using streaming endpoints, error handling has been improved to provide more
+detailed error information. If the API returns a non-200 status code, the error
+will now include the full response body:
+
+```rust
+let mut stream = client.chat().create_stream(chat_request).await;
+
+match stream {
+    Ok(mut stream) => {
+        while let Some(result) = stream.next().await {
+            match result {
+                Ok(response) => {
+                    // Process successful response...
+                },
+                Err(err) => {
+                    eprintln!("Error in stream: {}", err);
+                }
+            }
+        }
+    },
+    Err(err) => {
+        match &err {
+            OpenAIError::ApiError(api_err) => {
+                // OpenAI API returned an error response with structured error data
+                eprintln!("OpenAI API error: {}", api_err.message);
+                if let Some(error_type) = &api_err.r#type {
+                    eprintln!("Error type: {}", error_type);
+                }
+                if let Some(code) = &api_err.code {
+                    eprintln!("Error code: {}", code);
+                }
+            },
+            OpenAIError::StreamErrorWithBody { message, body } => {
+                // Error with response body
+                eprintln!("Stream error: {}", message);
+                eprintln!("Response body: {}", body);
+            },
+            _ => {
+                // Other errors
+                eprintln!("Error: {}", err);
+            }
+        }
+    }
+}
+```
+
+This enables debugging API issues more effectively by providing access to the
+full error response.

@@ -21,6 +21,9 @@ pub enum OpenAIError {
     /// Error on SSE streaming
     #[error("stream failed: {0}")]
     StreamError(String),
+    /// Error on SSE streaming with response body
+    #[error("stream failed: {message} - Response: {body}")]
+    StreamErrorWithBody { message: String, body: String },
     /// Error from client side validation
     /// or when builder fails to build request before making API call
     #[error("invalid args: {0}")]
